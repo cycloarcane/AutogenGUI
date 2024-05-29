@@ -123,7 +123,7 @@ def format_output(chat_res):
 
 # GUI setup
 root = tk.Tk()
-root.title("3AgentGC")
+root.title("3AgentGCExec")
 root.configure(bg="black")
 toggle_agent_config_button = tk.Button(root, text="Hide Agent Config", command=toggle_agent_config, fg="red", bg="black")
 toggle_agent_config_button.grid(row=3, column=0, sticky="w", padx=10, pady=(5, 0))
