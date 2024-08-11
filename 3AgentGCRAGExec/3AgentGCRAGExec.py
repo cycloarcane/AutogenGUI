@@ -30,7 +30,7 @@ config_list = [
     {
         "model": "gpt-4o-mini",
         "api_key": api_key,
-        "tags": ["gpt-4o-mini"]
+        "tags": ["gpt-4o-mini"],
 #        "base_url": default_base_url
     }
 ]
@@ -89,11 +89,6 @@ def add_document():
     context_documents = [doc.strip() for doc in document_paths if doc.strip()]
     messagebox.showinfo("Documents Updated", f"Documents updated: {context_documents}")
 
-def update_prompt():
-    global current_prompt
-    current_prompt = prompt_text.get("1.0", tk.END).strip()
-    messagebox.showinfo("Prompt Updated", "The prompt has been updated successfully!")
-
 def my_message_generator(sender, recipient, context):
     user_request = context.get("user_request")
     documents_content = "\n".join([read_document(doc) for doc in context_documents])
@@ -151,19 +146,19 @@ def reinitialize_agents():
     print(f"Agent messages:\n{agent1_message}\n{agent2_message}\n{agent3_message}")
 
     agent1 = autogen.AssistantAgent(
-        name=agent1_name,
+        name="agent1",  # Ensure this name is valid
         llm_config=llm_config,
         system_message=agent1_message,
     )
 
     agent2 = autogen.AssistantAgent(
-        name=agent2_name,
+        name="agent2",  # Ensure this name is valid
         system_message=agent2_message,
         llm_config=llm_config,
     )
 
     agent3 = autogen.AssistantAgent(
-        name=agent3_name,
+        name="agent3",  # Ensure this name is valid
         system_message=agent3_message,
         llm_config=llm_config,
     )
@@ -229,24 +224,11 @@ document_entry.grid(row=0, column=0, sticky="ew")
 add_document_button = tk.Button(document_frame, text="Update Documents", command=add_document, fg="red", bg="black")
 add_document_button.grid(row=1, column=0, sticky="w", pady=(5, 0))
 
-prompt_label = tk.Label(root, text="Edit Prompt:", fg="white", bg="black")
-prompt_label.grid(row=7, column=0, sticky="w")
-
-prompt_frame = tk.Frame(root, bg="black")
-prompt_frame.grid(row=8, column=0, sticky="ew", padx=10, pady=(0, 10))
-prompt_frame.columnconfigure(0, weight=1)
-
-prompt_text = tk.Text(prompt_frame, height=3, width=60, bg="black", fg="red", highlightbackground="red", highlightcolor="red", highlightthickness=1, insertbackground="red", wrap=tk.WORD)
-prompt_text.grid(row=0, column=0, sticky="ew")
-
-update_prompt_button = tk.Button(prompt_frame, text="Update Prompt", command=update_prompt, fg="red", bg="black")
-update_prompt_button.grid(row=1, column=0, sticky="w", pady=(5, 0))
-
 agent1_name_label = tk.Label(agent_frame, text="Agent 1 Name:", fg="white", bg="black", font=label_font)
 agent1_name_label.grid(row=0, column=0, sticky="w")
 agent1_name_entry = tk.Entry(agent_frame, width=25, bg="black", fg="red", highlightbackground="red", highlightcolor="red", highlightthickness=1, insertbackground="red")
 agent1_name_entry.grid(row=1, column=0, sticky="w")
-agent1_name_entry.insert(0, "Agent 1")
+agent1_name_entry.insert(0, "agent1")
 
 agent1_message_label = tk.Label(agent_frame, text="Agent 1 Message:", fg="white", bg="black", font=label_font)
 agent1_message_label.grid(row=0, column=1, sticky="w")
@@ -264,7 +246,7 @@ agent2_name_label = tk.Label(agent_frame, text="Agent 2 Name:", fg="white", bg="
 agent2_name_label.grid(row=2, column=0, sticky="w")
 agent2_name_entry = tk.Entry(agent_frame, width=25, bg="black", fg="red", highlightbackground="red", highlightcolor="red", highlightthickness=1, insertbackground="red")
 agent2_name_entry.grid(row=3, column=0, sticky="w")
-agent2_name_entry.insert(0, "Agent 2")
+agent2_name_entry.insert(0, "agent2")
 
 agent2_message_label = tk.Label(agent_frame, text="Agent 2 Message:", fg="white", bg="black", font=label_font)
 agent2_message_label.grid(row=2, column=1, sticky="w")
@@ -282,7 +264,7 @@ agent3_name_label = tk.Label(agent_frame, text="Agent 3 Name:", fg="white", bg="
 agent3_name_label.grid(row=4, column=0, sticky="w")
 agent3_name_entry = tk.Entry(agent_frame, width=25, bg="black", fg="red", highlightbackground="red", highlightcolor="red", highlightthickness=1, insertbackground="red")
 agent3_name_entry.grid(row=5, column=0, sticky="w")
-agent3_name_entry.insert(0, "Agent 3")
+agent3_name_entry.insert(0, "agent3")
 
 agent3_message_label = tk.Label(agent_frame, text="Agent 3 Message:", fg="white", bg="black", font=label_font)
 agent3_message_label.grid(row=4, column=1, sticky="w")
@@ -317,7 +299,7 @@ start_button = tk.Button(input_frame, text="Start", command=handle_request, fg="
 start_button.grid(row=1, column=0, sticky="w", pady=(5, 0))
 
 output_frame = tk.Frame(root, bg="black")
-output_frame.grid(row=4, column=0, columnspan=1, sticky="nsew", padx=10, pady=(10, 10))
+output_frame.grid(row=9, column=0, columnspan=1, sticky="nsew", padx=10, pady=(10, 10))  # Moved output to the bottom (row=9)
 output_frame.columnconfigure(0, weight=1)
 output_frame.rowconfigure(0, weight=1)
 
