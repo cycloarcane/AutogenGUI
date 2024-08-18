@@ -157,34 +157,58 @@ class AgentManager:
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("3AgentGCExec")
+        self.title("NestedGCRAG")
         self.configure(bg="black")
         self.app_config = AppConfig()
         self.agent_manager = AgentManager(self.app_config)
         self.document_handler = DocumentHandler()
         self.create_widgets()
+        self.apply_theme()
 
     def create_widgets(self):
         self.create_url_frame()
+        self.create_toggle_button()
         self.create_agent_frame()
         self.create_document_frame()
         self.create_input_frame()
         self.create_output_frame()
+        
+        self.grid_rowconfigure(5, weight=1)  # Make the output frame expandable
+        self.grid_columnconfigure(0, weight=1)  # Make columns expandable
+
+    def apply_theme(self):
+        self.configure(bg="black")
+        style = ttk.Style()
+        style.theme_use('default')
+        style.configure('TFrame', background="black")
+        style.configure('TLabel', background="black", foreground="green")
+        style.configure('TEntry', fieldbackground="black", foreground="green")
+        style.configure('TButton', background="black", foreground="green")
+        style.map('TButton', background=[('active', 'black')], foreground=[('active', 'light green')])
+        
+        for widget in self.winfo_children():
+            if isinstance(widget, tk.Text):
+                widget.configure(bg="black", fg="green", insertbackground="green")
 
     def create_url_frame(self):
-        url_frame = ttk.Frame(self)
-        url_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+        self.url_frame = ttk.Frame(self)
+        self.url_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
         
-        ttk.Label(url_frame, text="Enter Base URL:").grid(row=0, column=0, sticky="w")
-        self.url_entry = ttk.Entry(url_frame, width=60)
+        ttk.Label(self.url_frame, text="Enter Base URL:").grid(row=0, column=0, sticky="w")
+        self.url_entry = ttk.Entry(self.url_frame, width=60)
         self.url_entry.grid(row=0, column=1, sticky="ew", padx=(0, 10))
         self.url_entry.insert(0, self.app_config.default_base_url)
         
-        ttk.Button(url_frame, text="Set URL", command=self.update_config).grid(row=0, column=2)
+        ttk.Button(self.url_frame, text="Set URL", command=self.update_config).grid(row=0, column=2)
+
+    def create_toggle_button(self):
+        self.toggle_agent_config_button = ttk.Button(self, text="Hide Config", 
+                                                     command=self.toggle_config)
+        self.toggle_agent_config_button.grid(row=1, column=0, sticky="w", padx=10, pady=(5, 0))
 
     def create_agent_frame(self):
-        agent_frame = ttk.Frame(self)
-        agent_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+        self.agent_frame = ttk.Frame(self)
+        self.agent_frame.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
 
         self.agent_configs = [
             AgentConfig("Agent1", "Agent 1 system message."),
@@ -195,52 +219,68 @@ class Application(tk.Tk):
         ]
 
         for i, config in enumerate(self.agent_configs):
-            ttk.Label(agent_frame, text=f"{config.name} Name:").grid(row=i*2, column=0, sticky="w")
-            name_entry = ttk.Entry(agent_frame, width=25)
+            ttk.Label(self.agent_frame, text=f"{config.name} Name:").grid(row=i*2, column=0, sticky="w")
+            name_entry = ttk.Entry(self.agent_frame, width=25)
             name_entry.grid(row=i*2+1, column=0, sticky="w")
             name_entry.insert(0, config.name)
 
-            ttk.Label(agent_frame, text=f"{config.name} Message:").grid(row=i*2, column=1, sticky="w")
-            message_entry = tk.Text(agent_frame, height=2, width=50)
+            ttk.Label(self.agent_frame, text=f"{config.name} Message:").grid(row=i*2, column=1, sticky="w")
+            message_entry = tk.Text(self.agent_frame, height=2, width=50)
             message_entry.grid(row=i*2+1, column=1, sticky="ew")
             message_entry.insert(tk.END, config.system_message)
 
             setattr(self, f"{config.name.lower()}_name_entry", name_entry)
             setattr(self, f"{config.name.lower()}_message_entry", message_entry)
 
-        ttk.Button(agent_frame, text="Set Agent Config", command=self.update_agent_config).grid(row=len(self.agent_configs)*2, column=0, sticky="w", pady=10)
+        ttk.Button(self.agent_frame, text="Set Agent Config", command=self.update_agent_config).grid(row=len(self.agent_configs)*2, column=0, sticky="w", pady=10)
 
     def create_document_frame(self):
-        document_frame = ttk.Frame(self)
-        document_frame.grid(row=2, column=0, sticky="ew", padx=10, pady=10)
+        self.document_frame = ttk.Frame(self)
+        self.document_frame.grid(row=3, column=0, sticky="ew", padx=10, pady=10)
 
-        ttk.Label(document_frame, text="Enter URL or File Path:").grid(row=0, column=0, sticky="w")
-        self.document_entry = ttk.Entry(document_frame, width=60)
+        ttk.Label(self.document_frame, text="Enter URL or File Path:").grid(row=0, column=0, sticky="w")
+        self.document_entry = ttk.Entry(self.document_frame, width=60)
         self.document_entry.grid(row=1, column=0, sticky="ew")
 
-        ttk.Button(document_frame, text="Update Documents", command=self.add_document).grid(row=2, column=0, sticky="w", pady=(5, 0))
+        ttk.Button(self.document_frame, text="Update Documents", command=self.add_document).grid(row=2, column=0, sticky="w", pady=(5, 0))
 
     def create_input_frame(self):
-        input_frame = ttk.Frame(self)
-        input_frame.grid(row=3, column=0, sticky="ew", padx=10, pady=10)
+        self.input_frame = ttk.Frame(self)
+        self.input_frame.grid(row=4, column=0, sticky="ew", padx=10, pady=10)
 
-        ttk.Label(input_frame, text="Enter initial prompt:").grid(row=0, column=0, sticky="w")
-        self.input_text = tk.Text(input_frame, height=4, width=60)
+        ttk.Label(self.input_frame, text="Enter initial prompt:").grid(row=0, column=0, sticky="w")
+        self.input_text = tk.Text(self.input_frame, height=4, width=60)
         self.input_text.grid(row=1, column=0, sticky="ew")
 
-        ttk.Button(input_frame, text="Start", command=self.handle_request).grid(row=2, column=0, sticky="w", pady=(5, 0))
+        ttk.Button(self.input_frame, text="Start", command=self.handle_request).grid(row=2, column=0, sticky="w", pady=(5, 0))
 
     def create_output_frame(self):
-        output_frame = ttk.Frame(self)
-        output_frame.grid(row=4, column=0, sticky="nsew", padx=10, pady=10)
-        self.rowconfigure(4, weight=1)
+        self.output_frame = ttk.Frame(self)
+        self.output_frame.grid(row=5, column=0, sticky="nsew", padx=10, pady=10)
+        self.rowconfigure(5, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.output_text = tk.Text(output_frame, wrap=tk.WORD)
+        self.output_text = tk.Text(self.output_frame, wrap=tk.WORD)
         self.output_text.pack(fill=tk.BOTH, expand=True)
 
         sys.stdout = TextRedirector(self.output_text)
         sys.stderr = TextRedirector(self.output_text)
+
+    def toggle_config(self):
+        if self.agent_frame.winfo_viewable():
+            self.url_frame.grid_remove()
+            self.agent_frame.grid_remove()
+            self.document_frame.grid_remove()
+            self.toggle_agent_config_button.config(text="Show Config")
+            self.input_frame.grid(row=2, column=0)  # Move input frame up
+            self.output_frame.grid(row=3, column=0)  # Move output frame up
+        else:
+            self.url_frame.grid()
+            self.agent_frame.grid()
+            self.document_frame.grid()
+            self.toggle_agent_config_button.config(text="Hide Config")
+            self.input_frame.grid(row=4, column=0)  # Move input frame back
+            self.output_frame.grid(row=5, column=0)  # Move output frame back
 
     def update_config(self):
         url = self.url_entry.get()
@@ -274,6 +314,20 @@ class Application(tk.Tk):
         self.app_config.context_documents = [doc.strip() for doc in document_paths if doc.strip()]
         messagebox.showinfo("Documents Updated", f"Documents updated: {self.app_config.context_documents}")
 
+    def create_output_frame(self):
+        self.output_frame = ttk.Frame(self)
+        self.output_frame.grid(row=5, column=0, sticky="nsew", padx=10, pady=10)
+
+        self.output_text = tk.Text(self.output_frame, wrap=tk.WORD)
+        self.output_text.pack(fill=tk.BOTH, expand=True)
+
+        self.save_button = ttk.Button(self.output_frame, text="Save Output", command=self.save_output)
+        self.save_button.pack(side=tk.BOTTOM, pady=5)
+        self.save_button.pack_forget()  # Hide the button initially
+
+        sys.stdout = TextRedirector(self.output_text)
+        sys.stderr = TextRedirector(self.output_text)
+
     def handle_request(self):
         def run_request():
             user_request = self.input_text.get("1.0", tk.END).strip()
@@ -289,11 +343,26 @@ class Application(tk.Tk):
                     )
                     self.output_text.insert(tk.END, f"Output:\n{res}\n\nChat Ended.\n")
                     self.output_text.see(tk.END)
+                    self.save_button.pack(side=tk.BOTTOM, pady=5)  # Show the save button
                 except Exception as e:
                     logger.error(f"Error in chat: {e}")
                     messagebox.showerror("Error", f"An error occurred: {e}")
 
         threading.Thread(target=run_request).start()
+
+
+    def save_output(self):
+        output = self.output_text.get("1.0", tk.END)
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt",
+                                                 filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        if file_path:
+            try:
+                with open(file_path, "w", encoding="utf-8") as file:
+                    file.write(output)
+                messagebox.showinfo("Save Successful", f"Output saved to {file_path}")
+            except Exception as e:
+                logger.error(f"Error saving file: {e}")
+                messagebox.showerror("Error", f"An error occurred while saving the file: {e}")
 
 if __name__ == "__main__":
     app = Application()
