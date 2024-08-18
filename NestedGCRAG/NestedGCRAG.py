@@ -112,9 +112,7 @@ class AgentManager:
         self.agents['user_proxy'] = autogen.UserProxyAgent(
             name="User_proxy",
             system_message="A human admin.",
-            code_execution_config={
-                "executor": LocalCommandLineCodeExecutor(work_dir="coding"),
-            },
+            code_execution_config=False,
             human_input_mode="TERMINATE",
         )
 
