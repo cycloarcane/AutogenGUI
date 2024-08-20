@@ -1,14 +1,17 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import autogen
-import agentops
 import threading
 import sys
 import os
-import uuid  # Used to generate unique session IDs
+import agentops
+
 
 global dark_mode
 dark_mode = True  # Start in dark mode by default
+
+agentops.init(tags=["simple-autogenGUI-example"])
+
 
 class TextRedirector:
     def __init__(self, text_widget):
@@ -22,12 +25,7 @@ class TextRedirector:
     def flush(self):
         pass
 
-# Fetching API keys from environment variables
 api_key = os.getenv("OPENAI_API_KEY", "default-api-key")
-agentops_api_key = os.getenv("AGENTOPS_API_KEY", "default-agentops-api-key")
-
-# Initialize agentops with API key
-agentops.init(api_key=agentops_api_key)
 
 default_base_url = "http://127.0.0.1:5000/v1/"
 config_list = [
@@ -35,6 +33,7 @@ config_list = [
         "model": "gpt-4o-mini",
         "api_key": api_key,
         "tags": ["gpt-4o-mini"]
+#        "base_url": default_base_url
     }
 ]
 
@@ -45,12 +44,12 @@ def toggle_agent_config():
         agent_frame.grid_remove()
         url_frame.grid_remove()
         toggle_agent_config_button.config(text="Show Agent Config")
-        set_input_height(12)
+        set_input_height(12)  # Increase height when agent config is hidden
     else:
         agent_frame.grid()
         url_frame.grid()
         toggle_agent_config_button.config(text="Hide Agent Config")
-        set_input_height(6)
+        set_input_height(6)  # Decrease height when agent config is shown
     
     root.update_idletasks()
 
@@ -81,7 +80,6 @@ def reinitialize_agents():
     print(f"Initializing agents with names: {agent1_name}, {agent2_name}, {agent3_name}")
     print(f"Agent messages:\n{agent1_message}\n{agent2_message}\n{agent3_message}")
 
-    # Initialize agents
     agent1 = autogen.AssistantAgent(
         name=agent1_name,
         llm_config=llm_config,
@@ -100,7 +98,6 @@ def reinitialize_agents():
         llm_config=llm_config,
     )
 
-    # Create the group chat and manager
     groupchat = autogen.GroupChat(agents=[user_proxy, agent1, agent2, agent3], messages=[], max_round=12, speaker_selection_method="round_robin")
     manager = autogen.GroupChatManager(groupchat=groupchat, llm_config=llm_config)
 
@@ -120,21 +117,9 @@ def handle_request():
     def run_request():
         user_request = input_text.get("1.0", tk.END).strip()
         if user_request:
-            session_id = str(uuid.uuid4())  # Generate a unique session ID
             try:
                 update_status("Processing request...")
-                
-                # Prepare a config for the session
-                session_config = {"tag": "example-session"}
-                
-                # Start a new session with session_id and config
-                session = agentops.Session(session_id=session_id, config=session_config)
-                session.start()
-                
                 user_proxy.initiate_chat(manager, message=user_request)
-                
-                session.end("Success")  # End session explicitly
-                
                 formatted_output = format_output("Chat Ended.")
                 output_text.insert(tk.END, formatted_output + '\n')
                 output_text.see(tk.END)
@@ -142,8 +127,6 @@ def handle_request():
                 update_status("Request completed")
             except Exception as e:
                 print(f"Error: {e}")
-                if 'session' in locals():
-                    session.end("Failed due to error")
                 update_status("Error occurred")
         else:
             messagebox.showerror("Error", "Please enter a request!")
@@ -322,6 +305,8 @@ def set_input_height(height):
 
 set_input_height(6)  # Set initial height to 6 lines
 
+
+# Set minimum height for input_text
 input_text.config(height=4)
 input_frame.grid_propagate(False)
 input_frame.config(height=100)  # Adjust this value as needed
@@ -364,3 +349,5 @@ sys.stderr = TextRedirector(output_text)
 reinitialize_agents()
 
 root.mainloop()
+
+agentops.end_session("Success")
