@@ -189,7 +189,7 @@ def update_status(message):
 
 # GUI setup
 root = tk.Tk()
-root.title("3AgentGC")
+root.title("3AgentGCAgentOps")
 root.configure(bg="black")
 root.columnconfigure(0, weight=1)
 root.rowconfigure(5, weight=1)  # This is the row of the input_frame
