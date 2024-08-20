@@ -10,7 +10,7 @@ import agentops
 global dark_mode
 dark_mode = True  # Start in dark mode by default
 
-agentops.init(tags=["simple-autogenGUI-example"])
+agentops.init(default_tags=["simple-autogenGUI-example"])
 
 
 class TextRedirector:
@@ -31,8 +31,8 @@ default_base_url = "http://127.0.0.1:5000/v1/"
 config_list = [
     {
         "model": "gpt-4o-mini",
-        "api_key": api_key,
-        "tags": ["gpt-4o-mini"]
+        "api_key": api_key
+#        "tags": ["gpt-4o-mini"]
 #        "base_url": default_base_url
     }
 ]
@@ -119,9 +119,15 @@ def handle_request():
         if user_request:
             try:
                 update_status("Processing request...")
+                
+                # Initiate or continue the chat with context preservation
                 user_proxy.initiate_chat(manager, message=user_request)
-                formatted_output = format_output("Chat Ended.")
-                output_text.insert(tk.END, formatted_output + '\n')
+
+                # Ensure chat history is updated
+                for agent_response in manager.groupchat.messages:
+                    formatted_output = format_output(agent_response["content"])
+                    output_text.insert(tk.END, formatted_output + '\n')
+
                 output_text.see(tk.END)
                 root.update_idletasks()
                 update_status("Request completed")
