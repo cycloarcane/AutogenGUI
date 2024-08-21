@@ -15,7 +15,7 @@ d88P     888  "Y88888  "Y888 "Y88P"   "Y88888  "Y8888  888  888  "Y8888P88  "Y88
                                       "Y88P"
 ```
 
-Welcome to the repository containing Microsoft's AutoGen derived GUI scripts and binaries. This repository offers a variety of functionalities.
+Welcome to the repository containing Microsoft's AutoGen derived GUI scripts and binaries. This repository offers a variety of functionalities, some of which are fully working and some mat require small amounts of modification.
 
 ## Application Safety Guide
 
