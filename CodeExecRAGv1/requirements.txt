@@ -17,7 +17,7 @@ numpy==1.26.4
 openai==1.30.3
 packaging==24.0
 pillow==10.3.0
-pyautogen==0.2.27
+ag2==0.2.27
 pydantic==2.7.1
 pydantic_core==2.18.2
 pyinstaller==6.7.0

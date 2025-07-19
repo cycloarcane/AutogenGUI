@@ -30,7 +30,7 @@ numpy==1.26.4
 openai==1.30.4
 packaging==24.0
 pkginfo==1.10.0
-pyautogen==0.2.27
+ag2==0.2.27
 pycodestyle==2.11.1
 pycparser==2.22
 pydantic==2.7.2
