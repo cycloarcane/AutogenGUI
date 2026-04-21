@@ -36,7 +36,7 @@ pycparser==2.22
 pydantic==2.7.2
 pydantic_core==2.18.3
 Pygments==2.18.0
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 PyYAML==6.0.1
 readme_renderer==43.0
 regex==2024.5.15
