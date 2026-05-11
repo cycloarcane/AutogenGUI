@@ -52,5 +52,5 @@ tiktoken==0.7.0
 tqdm==4.66.4
 twine==5.1.0
 typing_extensions==4.12.0
-urllib3==2.6.3
+urllib3==2.7.0
 zipp==3.19.1
